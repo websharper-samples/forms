@@ -4,6 +4,7 @@ open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Html
+open WebSharper.UI.Templating
 open WebSharper.UI.Client
 open WebSharper.Forms
 
@@ -11,6 +12,8 @@ open WebSharper.Forms
 /// enter your details, add and reorder pets, and submit.
 [<JavaScript>]
 module PersonPets =
+
+    type Template = Templating.Template<"wwwroot/index.html", ClientLoad.FromDocument>
 
     type Species =
         | Cat
@@ -96,48 +99,39 @@ module PersonPets =
             (pets: Form.Many.CollectionWithDefault<Pet, _, _>)
             (submit: Submitter<Result<Person>>)
             =
-            section [ attr.``class`` "card" ] [
-                div [ attr.``class`` "card-head" ] [
-                    div [] [
-                        h2 [] [ text "Your details" ]
-                        p [] [ text "All fields are validated as you type." ]
-                    ]
+            Doc.Concat [
+                div [
+                    attr.``class`` "banner-slot"
+                    on.viewUpdate submitted.View (fun el msg ->
+                        el.TextContent <- defaultArg msg "")
+                ] []
+
+                field "First name"
+                    (Doc.InputType.Text [ attr.``class`` "input" ] firstName)
+                    (showErrors (submit.View.Through firstName))
+
+                field "Last name"
+                    (Doc.InputType.Text [ attr.``class`` "input" ] lastName)
+                    (showErrors (submit.View.Through lastName))
+
+                div [ attr.``class`` "section-title" ] [
+                    text "Your pets"
+                    Doc.Button "Add a pet" [ attr.``class`` "btn btn-ghost btn-small" ] pets.Add
                 ]
-                div [ attr.``class`` "card-body" ] [
 
-                    div [
-                        attr.``class`` "banner-slot"
-                        on.viewUpdate submitted.View (fun el msg ->
-                            el.TextContent <- defaultArg msg "")
-                    ] []
+                pets.Render (fun ops species name ->
+                    div [ attr.``class`` "pet-row" ] [
+                        renderPet species name
+                        div [ attr.``class`` "pet-actions" ] [
+                            Doc.ButtonValidate "Up" [ attr.``class`` "btn-icon" ] ops.MoveUp
+                            Doc.ButtonValidate "Down" [ attr.``class`` "btn-icon" ] ops.MoveDown
+                            Doc.Button "Delete" [ attr.``class`` "btn-icon btn-danger" ] ops.Delete
+                        ]
+                        showErrors (submit.View.Through name)
+                    ])
 
-                    field "First name"
-                        (Doc.InputType.Text [ attr.``class`` "input" ] firstName)
-                        (showErrors (submit.View.Through firstName))
-
-                    field "Last name"
-                        (Doc.InputType.Text [ attr.``class`` "input" ] lastName)
-                        (showErrors (submit.View.Through lastName))
-
-                    div [ attr.``class`` "section-title" ] [
-                        text "Your pets"
-                        Doc.Button "Add a pet" [ attr.``class`` "btn btn-ghost btn-small" ] pets.Add
-                    ]
-
-                    pets.Render (fun ops species name ->
-                        div [ attr.``class`` "pet-row" ] [
-                            renderPet species name
-                            div [ attr.``class`` "pet-actions" ] [
-                                Doc.ButtonValidate "Up" [ attr.``class`` "btn-icon" ] ops.MoveUp
-                                Doc.ButtonValidate "Down" [ attr.``class`` "btn-icon" ] ops.MoveDown
-                                Doc.Button "Delete" [ attr.``class`` "btn-icon btn-danger" ] ops.Delete
-                            ]
-                            showErrors (submit.View.Through name)
-                        ])
-
-                    div [ attr.``class`` "actions" ] [
-                        Doc.Button "Submit" [ attr.``class`` "btn btn-primary" ] submit.Trigger
-                    ]
+                div [ attr.``class`` "actions" ] [
+                    Doc.Button "Submit" [ attr.``class`` "btn btn-primary" ] submit.Trigger
                 ]
             ]
 
@@ -154,4 +148,4 @@ module PersonPets =
                      |> Seq.map (fun pet -> ", your " + string pet.Species + " " + pet.Name)
                      |> String.concat "")))
         |> Form.Render renderPerson
-        |> Doc.RunById "main"
+        |> fun form -> Template().Form(form).Bind()

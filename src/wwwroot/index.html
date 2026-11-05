@@ -15,7 +15,7 @@
         <span class="app-logo"><i class="fa-solid fa-list-check"></i></span>
         <div class="app-titles">
           <h1>WebSharper.Forms</h1>
-          <p>Reactive, validated forms with WebSharper</p>
+          <p>Reactive, validated forms with <a href="https://websharper.com" target="_blank" rel="noreferrer">WebSharper</a></p>
         </div>
       </div>
       <a class="btn btn-ghost" href="https://github.com/websharper-samples/Forms" target="_blank" rel="noreferrer">
@@ -23,7 +23,17 @@
       </a>
     </header>
 
-    <main id="main" class="content"></main>
+    <main class="content">
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Your details</h2>
+            <p>All fields are validated as you type.</p>
+          </div>
+        </div>
+        <div class="card-body" ws-hole="Form"></div>
+      </section>
+    </main>
   </div>
 
   <script type="module" src="Scripts/Forms.min.js"></script>
