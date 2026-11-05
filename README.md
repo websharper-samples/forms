@@ -1,6 +1,44 @@
-# WebSharper Forms [![Build status](https://ci.appveyor.com/api/projects/status/6bbo1gmnbxkcdkdo?svg=true)](https://ci.appveyor.com/project/IntelliFactory/forms)
+# WebSharper.Forms
 
-Sample for [WebSharper](https://websharper.com) bindings for [Forms](https://github.com/dotnet-websharper/forms).
+A reactive, validated form built with [WebSharper](https://websharper.com) and
+[WebSharper.Forms](https://github.com/dotnet-websharper/forms) (formlets):
+enter your details, add and reorder pets, and submit.
 
-* [Source repository on GitHub](https://github.com/websharper-samples/Forms)
-* [See it running live](https://websharper-samples.github.io/Forms)
+[![screenshot](docs/screenshot.png)](https://websharper-samples.github.io/Forms)
+
+**[Try it live](https://websharper-samples.github.io/Forms)**
+
+## What it shows
+
+- Typed, composable forms with `Form.Return` and the applicative `<*>` operator.
+- Per-field validation that surfaces errors as you type
+  (`Validation.IsNotEmpty`, `submit.View.Through`).
+- A dynamic collection of sub-forms with `Form.Many` — add, move up/down and
+  delete pets — plus a submit button that is only enabled when the form is valid.
+
+## How it works
+
+- `src/Client.fs` defines the `Person`/`Pet` model and describes the form
+  declaratively; `Form.Render` turns it into the WebSharper.UI document that is
+  rendered into the page.
+- `src/wwwroot/index.html` holds the page header and the styles live in
+  `src/wwwroot/css/index.css`.
+
+## Running locally
+
+```
+dotnet run --project src
+```
+
+Then open <http://localhost:5294>.
+
+## Building
+
+```
+dotnet build src/Forms.fsproj -c Release
+```
+
+## Deployment
+
+Every push to `master` builds in Release and publishes `src/wwwroot` to the
+`gh-pages` branch via `.github/workflows/deploy.yml`.
