@@ -61,14 +61,11 @@ module PersonPets =
             text (string value)
         ]
 
-    let private renderPet (species: Var<Species>) (name: Var<string>) =
-        div [ attr.``class`` "pet" ] [
-            div [ attr.``class`` "radio-group" ] [
-                speciesRadio species Cat
-                speciesRadio species Dog
-                speciesRadio species Piglet
-            ]
-            Doc.InputType.Text [ attr.``class`` "input"; attr.placeholder "Pet name" ] name
+    let private speciesRadios (species: Var<Species>) =
+        Doc.Concat [
+            speciesRadio species Cat
+            speciesRadio species Dog
+            speciesRadio species Piglet
         ]
 
     let private showErrors (v: View<Result<'T>>) =
@@ -82,13 +79,6 @@ module PersonPets =
                 ])
         |> Doc.EmbedView
 
-    let private field caption child errors =
-        div [ attr.``class`` "field" ] [
-            label [ attr.``class`` "field-label" ] [ text caption ]
-            child
-            errors
-        ]
-
     [<SPAEntryPoint>]
     let Main () =
         let submitted = Var.Create (None: string option)
@@ -99,41 +89,25 @@ module PersonPets =
             (pets: Form.Many.CollectionWithDefault<Pet, _, _>)
             (submit: Submitter<Result<Person>>)
             =
-            Doc.Concat [
-                div [
-                    attr.``class`` "banner-slot"
-                    on.viewUpdate submitted.View (fun el msg ->
-                        el.TextContent <- defaultArg msg "")
-                ] []
-
-                field "First name"
-                    (Doc.InputType.Text [ attr.``class`` "input" ] firstName)
-                    (showErrors (submit.View.Through firstName))
-
-                field "Last name"
-                    (Doc.InputType.Text [ attr.``class`` "input" ] lastName)
-                    (showErrors (submit.View.Through lastName))
-
-                div [ attr.``class`` "section-title" ] [
-                    text "Your pets"
-                    Doc.Button "Add a pet" [ attr.``class`` "btn btn-ghost btn-small" ] pets.Add
-                ]
-
-                pets.Render (fun ops species name ->
-                    div [ attr.``class`` "pet-row" ] [
-                        renderPet species name
-                        div [ attr.``class`` "pet-actions" ] [
-                            Doc.ButtonValidate "Up" [ attr.``class`` "btn-icon" ] ops.MoveUp
-                            Doc.ButtonValidate "Down" [ attr.``class`` "btn-icon" ] ops.MoveDown
-                            Doc.Button "Delete" [ attr.``class`` "btn-icon btn-danger" ] ops.Delete
-                        ]
-                        showErrors (submit.View.Through name)
-                    ])
-
-                div [ attr.``class`` "actions" ] [
-                    Doc.Button "Submit" [ attr.``class`` "btn btn-primary" ] submit.Trigger
-                ]
-            ]
+            Template.Person()
+                .Banner(submitted.View |> View.Map (fun m -> defaultArg m ""))
+                .FirstName(firstName)
+                .FirstNameErrors(showErrors (submit.View.Through firstName))
+                .LastName(lastName)
+                .LastNameErrors(showErrors (submit.View.Through lastName))
+                .Pets(
+                    pets.Render (fun (ops: Form.Many.ItemOperations) (species: Var<Species>) (name: Var<string>) ->
+                        Template.Pet()
+                            .Species(speciesRadios species)
+                            .Name(name)
+                            .NameErrors(showErrors (submit.View.Through name))
+                            .MoveUpAttr(WebSharper.Forms.Attr.SubmitterValidate ops.MoveUp)
+                            .MoveDownAttr(WebSharper.Forms.Attr.SubmitterValidate ops.MoveDown)
+                            .Delete(fun _ -> ops.Delete())
+                            .Doc()))
+                .AddPet(fun _ -> pets.Add())
+                .Submit(fun _ -> submit.Trigger())
+                .Doc()
 
         PersonPiglet {
             FirstName = ""

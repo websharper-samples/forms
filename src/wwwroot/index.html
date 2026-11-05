@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" type="text/css" href="css/index.css" />
   <script type="text/javascript" src="Scripts/Forms.head.js"></script>
+  <style>
+    /* Don't show the not-yet-loaded templates */
+    [ws-template], [ws-children-template] { display: none; }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -34,6 +38,48 @@
         <div class="card-body" ws-hole="Form"></div>
       </section>
     </main>
+  </div>
+
+  <!-- The person form, rendered by WebSharper.Forms. -->
+  <div ws-children-template="Person">
+    <div class="banner-slot" ws-hole="Banner"></div>
+
+    <div class="field">
+      <label class="field-label">First name</label>
+      <input class="input" type="text" ws-var="FirstName" />
+      <div ws-hole="FirstNameErrors"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Last name</label>
+      <input class="input" type="text" ws-var="LastName" />
+      <div ws-hole="LastNameErrors"></div>
+    </div>
+
+    <div class="section-title">
+      <span>Your pets</span>
+      <button class="btn btn-ghost btn-small" ws-onclick="AddPet">Add a pet</button>
+    </div>
+
+    <div ws-hole="Pets"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" ws-onclick="Submit">Submit</button>
+    </div>
+  </div>
+
+  <!-- A single pet row. -->
+  <div class="pet-row" ws-template="Pet">
+    <div class="pet">
+      <div class="radio-group" ws-hole="Species"></div>
+      <input class="input" type="text" placeholder="Pet name" ws-var="Name" />
+    </div>
+    <div class="pet-actions">
+      <button class="btn-icon" ws-attr="MoveUpAttr">Up</button>
+      <button class="btn-icon" ws-attr="MoveDownAttr">Down</button>
+      <button class="btn-icon btn-danger" ws-onclick="Delete">Delete</button>
+    </div>
+    <div ws-hole="NameErrors"></div>
   </div>
 
   <script type="module" src="Scripts/Forms.min.js"></script>
