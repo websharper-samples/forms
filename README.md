@@ -2,7 +2,7 @@
 
 A reactive, validated form built with [WebSharper](https://websharper.com) and
 [WebSharper.Forms](https://github.com/dotnet-websharper/forms) (reactive forms,
-see the [WS.Forms documentation](https://docs.websharper.com/forms)): enter your
+see the [WebSharper.Forms documentation](https://docs.websharper.com/forms)): enter your
 details, add and reorder pets, and submit.
 
 [![screenshot](docs/screenshot.png)](https://websharper-samples.github.io/Forms)
