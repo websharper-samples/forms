@@ -1,8 +1,9 @@
 # WebSharper.Forms
 
 A reactive, validated form built with [WebSharper](https://websharper.com) and
-[WebSharper.Forms](https://github.com/dotnet-websharper/forms) (reactive forms):
-enter your details, add and reorder pets, and submit.
+[WebSharper.Forms](https://github.com/dotnet-websharper/forms) (reactive forms,
+see the [WS.Forms documentation](https://docs.websharper.com/forms)): enter your
+details, add and reorder pets, and submit.
 
 [![screenshot](docs/screenshot.png)](https://websharper-samples.github.io/Forms)
 
@@ -40,5 +41,5 @@ dotnet build src/Forms.fsproj -c Release
 
 ## Deployment
 
-Every push to `master` builds in Release and publishes `src/wwwroot` to the
+Every push to `main` builds in Release and publishes `src/wwwroot` to the
 `gh-pages` branch via `.github/workflows/deploy.yml`.
